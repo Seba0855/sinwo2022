@@ -13,13 +13,45 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
 }
 
+application {
+    mainClass.set("pl.edu.smcebi.ApplicationKt")
+
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+repositories {
+    mavenCentral()
+    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+}
+
+dependencies {
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-openapi:$ktor_version")
+    implementation("io.ktor:ktor-server-default-headers-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auto-head-response-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
 ktor {
     docker {
+        fatJar {
+            archiveFileName.set("sinwo-kotlin-backend.jar")
+        }
+
         // Konfiguracja wersji JRE wykorzystywanej przez obraz
         jreVersion.set(JreVersion.JRE_17)
 
         // Ustawienie nazwy obrazu kontenera wraz z jego tagiem. Jako tag podajemy wersje zdefiniowaną wyżej w projekcie.
-        localImageName.set("sinwo_kotlin_backend")
+        localImageName.set("sinwo-kotlin-backend")
         imageTag.set(version as String)
 
         portMappings.set(
@@ -46,29 +78,24 @@ ktor {
     }
 }
 
-application {
-    mainClass.set("pl.edu.smcebi.ApplicationKt")
+println("Ta czesc z kolei wyswietlana jest podczas fazy konfiguracji.")
 
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+tasks.register("configured") {
+    println("To rownież jest wyswietlane podczas konfiguracji, ponieważ wraz z buildem wywołujemy :configured.")
 }
 
-repositories {
-    mavenCentral()
+tasks.register("testTask") {
+    doLast {
+        println("To z kolei wykonywane jest podczas fazy wykonania.")
+    }
 }
 
-dependencies {
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-openapi:$ktor_version")
-    implementation("io.ktor:ktor-server-default-headers-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auto-head-response-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+tasks.register("testBoth") {
+    doFirst {
+        println("Ten task wykonywany jest jako pierwszy (faza wykonania).")
+    }
+    doLast {
+        println("Ten task wykonywany jest jako ostatni (faza wykonania).")
+    }
+    println("Z kolei, ta czesc wyswietlana jest podczas fazy konfiguracji, poniewaz :testBoth uzywany jest podczas budowania.")
 }
