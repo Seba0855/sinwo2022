@@ -6,6 +6,8 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun Route.listOrdersRoute() {
     get("/order") {
@@ -40,8 +42,17 @@ fun Route.totalizeOrderRoute() {
 
 fun Route.createNewOrder() {
     post("/order/new") {
-        val order = call.receive<Order>()
-        orderStorage.add(order)
+        val orderItems = call.receive<List<OrderItem>>()
+        orderStorage.add(orderItems.toNewOrder())
         call.respondText("Zamówienie zostało pomyślnie złożone", status = HttpStatusCode.Created)
     }
 }
+
+private fun List<OrderItem>.toNewOrder() = Order(
+    number = "${getCurrentDate()}-${(0..100).random()}",
+    contents = this
+)
+
+private fun getCurrentDate(): String = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN))
+
+const val DATE_PATTERN = "yyyy-MM-dd"
