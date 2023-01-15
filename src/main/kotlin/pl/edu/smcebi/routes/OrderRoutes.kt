@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 fun Route.listOrdersRoute() {
     get("/order") {
@@ -21,7 +22,7 @@ fun Route.getOrderRoute() {
     get("/order/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respondText("Bad Request", status = HttpStatusCode.BadRequest)
         val order = orderStorage.find { it.number == id } ?: return@get call.respondText(
-            "Not Found",
+            "Nie znaleziono zamówienia o podanym ID",
             status = HttpStatusCode.NotFound
         )
         call.respond(order)
@@ -32,7 +33,7 @@ fun Route.totalizeOrderRoute() {
     get("/order/{id?}/total") {
         val id = call.parameters["id"] ?: return@get call.respondText("Bad Request", status = HttpStatusCode.BadRequest)
         val order = orderStorage.find { it.number == id } ?: return@get call.respondText(
-            "Not Found",
+            "Nie znaleziono zamówienia o podanym ID",
             status = HttpStatusCode.NotFound
         )
         val total = order.contents.sumOf { it.price * it.amount }
@@ -43,13 +44,14 @@ fun Route.totalizeOrderRoute() {
 fun Route.createNewOrder() {
     post("/order/new") {
         val orderItems = call.receive<List<OrderItem>>()
-        orderStorage.add(orderItems.toNewOrder())
-        call.respondText("Zamówienie zostało pomyślnie złożone", status = HttpStatusCode.Created)
+        val newOrder = orderItems.toNewOrder()
+        orderStorage.add(newOrder)
+        call.respondText("Zamówienie o ID ${newOrder.number} zostało pomyślnie złożone", status = HttpStatusCode.Created)
     }
 }
 
 private fun List<OrderItem>.toNewOrder() = Order(
-    number = "${getCurrentDate()}-${(0..100).random()}",
+    number = "${getCurrentDate()}-${UUID.randomUUID()}",
     contents = this
 )
 
