@@ -43,10 +43,6 @@ dependencies {
 
 ktor {
     docker {
-        fatJar {
-            archiveFileName.set("sinwo-kotlin-backend.jar")
-        }
-
         // Konfiguracja wersji JRE wykorzystywanej przez obraz
         jreVersion.set(JreVersion.JRE_17)
 
@@ -59,8 +55,8 @@ ktor {
                 DockerPortMapping(
                     // Przemapowanie portu 8080 (domyślnego dla Dockera) na zewnętrzny port 80
                     // Pozwala nam to na uruchomienie serwera pod adresem http://0.0.0.0:80
-                    insideDocker = 8080,
-                    outsideDocker = 80,
+                    insideDocker = 2137,
+                    outsideDocker = 2137,
                     protocol = DockerPortMappingProtocol.TCP
                 )
             )

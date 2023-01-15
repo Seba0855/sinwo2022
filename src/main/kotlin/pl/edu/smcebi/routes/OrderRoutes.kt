@@ -3,6 +3,7 @@ package pl.edu.smcebi.routes
 import pl.edu.smcebi.models.*
 import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -34,5 +35,13 @@ fun Route.totalizeOrderRoute() {
         )
         val total = order.contents.sumOf { it.price * it.amount }
         call.respond(total)
+    }
+}
+
+fun Route.createNewOrder() {
+    post("/order/new") {
+        val order = call.receive<Order>()
+        orderStorage.add(order)
+        call.respondText("Zamówienie zostało pomyślnie złożone", status = HttpStatusCode.Created)
     }
 }
