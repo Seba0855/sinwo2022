@@ -46,7 +46,10 @@ fun Route.createNewOrder() {
         val orderItems = call.receive<List<OrderItem>>()
         val newOrder = orderItems.toNewOrder()
         orderStorage.add(newOrder)
-        call.respondText("Zamówienie o ID ${newOrder.number} zostało pomyślnie złożone", status = HttpStatusCode.Created)
+        call.respondText(
+            "Zamówienie o ID ${newOrder.number} zostało pomyślnie złożone",
+            status = HttpStatusCode.Created
+        )
     }
 }
 
