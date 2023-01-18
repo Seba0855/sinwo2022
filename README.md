@@ -52,7 +52,7 @@ This example features SwaggerUI, so it can be used to review available API endpo
 ```http
   GET /customer
 ```
-| Path parameter | Type     | Description    |
+| Query parameter | Type     | Description    |
 | :-------- | :------- | :-------------------------------- |
 | `id` | `Int` | User ID |
 
