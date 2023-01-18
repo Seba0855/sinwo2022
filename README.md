@@ -33,6 +33,8 @@ In order to deploy, run:
 
 ## API Reference
 
+This example features SwaggerUI, so it can be used to review available API endpoints. It's available on `/swagger`
+
 #### Get orders
 
 ```http
