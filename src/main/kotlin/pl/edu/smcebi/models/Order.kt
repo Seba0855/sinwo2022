@@ -2,12 +2,25 @@ package pl.edu.smcebi.models
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Klasa modelowa wykorzystywana do stworzenia zamówienia
+ *
+ * @param number: ID zamówienia
+ * @param contents: Lista elementów składających się na dane zamówienie
+ */
 @Serializable
 data class Order(
     val number: String,
     val contents: List<OrderItem>
 )
 
+/**
+ * Klasa modelowa służąca do przechowywania informacji o elemencie danego zamówienia
+ *
+ * @param item: Nazwa produktu
+ * @param amount: Ilość zamówionych produktów
+ * @param price: Cena odnosząca się do jednej sztuki produktu
+ */
 @Serializable
 data class OrderItem(
     val item: String,
